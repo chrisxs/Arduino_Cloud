@@ -11,15 +11,15 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
-const char* ssid = "chrisxs_01";
-const char* password = "aj20160223";
+const char* ssid = "你的WiFi SSID";
+const char* password = "你的WiFi密码";
 
-//Your Domain name with URL path or IP address with path
-const char* serverName = "http://192.168.10.254/esp-post-data.php";
+//服务器URL
+const char* serverName = "http://XXX.com/esp-post-data.php";
 
-// Keep this API Key value to be compatible with the PHP code provided in the project page.
-// If you change the apiKeyValue value, the PHP file /esp-post-data.php also needs to have the same key
-String apiKeyValue = "kpKooRFszHKXUl6i";
+
+// apiKeyValue为随机生成，必须与esp-database.php内的API KEY保持一致
+String apiKeyValue = "你的APIKEY";
 String sensorName = "BME280";
 String sensorLocation = "office";
 
@@ -41,7 +41,7 @@ unsigned long lastTime = 0;
 // Timer set to 10 minutes (600000)
 //unsigned long timerDelay = 600000;
 // Set timer to 30 seconds (30000)
-unsigned long timerDelay = 1000;
+unsigned long timerDelay = 30000;
 
 void setup() {
   Serial.begin(115200);
