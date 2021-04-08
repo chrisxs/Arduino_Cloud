@@ -15,7 +15,7 @@ const char* ssid = "chrisxs_01";
 const char* password = "aj20160223";
 
 //Your Domain name with URL path or IP address with path
-const char* serverName = "http://chrisxs.com/esp-post-data.php";
+const char* serverName = "http://192.168.10.254/esp-post-data.php";
 
 // Keep this API Key value to be compatible with the PHP code provided in the project page.
 // If you change the apiKeyValue value, the PHP file /esp-post-data.php also needs to have the same key
@@ -41,7 +41,7 @@ unsigned long lastTime = 0;
 // Timer set to 10 minutes (600000)
 //unsigned long timerDelay = 600000;
 // Set timer to 30 seconds (30000)
-unsigned long timerDelay = 30000;
+unsigned long timerDelay = 1000;
 
 void setup() {
   Serial.begin(115200);
