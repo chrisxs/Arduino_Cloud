@@ -11,7 +11,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
-const char* ssid = "你的WiFi SSID";
+const char* ssid = "你的WiFi-SSID";
 const char* password = "你的WiFi密码";
 
 //服务器URL
@@ -19,7 +19,7 @@ const char* serverName = "http://XXX.com/esp-post-data.php";
 
 
 // apiKeyValue为随机生成，必须与esp-database.php内的API KEY保持一致
-String apiKeyValue = "你的APIKEY";
+String apiKeyValue = "你的API-KEY";
 String sensorName = "BME280";
 String sensorLocation = "office";
 
