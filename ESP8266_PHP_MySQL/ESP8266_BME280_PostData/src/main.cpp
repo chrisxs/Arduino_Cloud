@@ -10,15 +10,20 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
+// https则开启
+// #include <WiFiClientSecure.h>
 
-const char *ssid = "chrisxs";
-const char *password = "aj20160223";
+const char *ssid = "你的WiFi_SSID";
+const char *password = "你的WiFi密码";
 
-// 服务器URL
-const char *serverName = "http://chrisxs.com/web-images/esp-post-data.php";
+// 服务器URL（https）
+// const char *serverName = "https://你的域名/esp-post-data.php";
+
+// 服务器URL（http）
+const char *serverName = "http://你的域名/esp-post-data.php";
 
 // apiKeyValue为随机生成，必须与esp-database.php内的API KEY保持一致
-String apiKeyValue = "hhzjd32jd94r";
+String apiKeyValue = "你的APIKEY";
 String sensorName = "BME280";
 String sensorLocation = "office";
 
@@ -77,9 +82,15 @@ void loop()
     // Check WiFi connection status
     if (WiFi.status() == WL_CONNECTED)
     {
+      // HTTPS则如下开启
+      /*WiFiClientSecure client;
+      client.setInsecure();*/
       HTTPClient http;
 
-      // Your Domain name with URL path or IP address with path
+      // https
+      // http.begin(client,serverName);
+
+      // http
       http.begin(serverName);
 
       // Specify content-type header

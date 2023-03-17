@@ -40,12 +40,15 @@ $avg_humi = avgReading($readings_count, 'value2');
 
     <link rel="stylesheet" type="text/css" href="esp-style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- HTTPS则如下 -->
+    <!--<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>-->
+    <!-- HTTP则如下 -->
     <script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
 </head>
 <header class="header">
     <h1>📊 滑稽哥的实验气象站 🌦️</h1>
     <form method="get">
-        <input type="number" name="readingsCount" min="1" placeholder="此处设置读取次数 (<?php echo $readings_count; ?>)秒">
+        <input type="number" name="readingsCount" min="1" placeholder="此处设置记录最大显示数 (<?php echo $readings_count; ?>)条">
         <input type="submit" value="确定">
     </form>
 </header>

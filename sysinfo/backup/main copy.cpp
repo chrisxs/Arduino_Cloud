@@ -1,9 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const char* ssid = "chrisxs_01";
-const char* password = "aj20160223";
-const char* serverUrl = "https://chrisxs.xyz/sysinfo.php";
+const char* ssid = "WiFi_SSID";
+const char* password = "WiFi密码";
+const char* serverUrl = "https://域名或IP/sysinfo.php";
 
 void setup() {
   Serial.begin(115200);
