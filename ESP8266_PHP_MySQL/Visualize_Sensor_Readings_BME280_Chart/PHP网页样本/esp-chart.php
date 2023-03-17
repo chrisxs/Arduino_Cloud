@@ -1,63 +1,67 @@
-
 <?php
-
-$title ="滑稽哥的小实验";
+// 设置页面标题
+$title = "滑稽哥的小实验";
 echo "<script>document.title = \"".$title."\" </script>";
 
+// 数据库信息
 $servername = "你的数据库路径";
-
-// REPLACE with your Database name
 $dbname = "你的数据库名称";
-// REPLACE with Database user
 $username = "你的数据库用户名";
-// REPLACE with Database user password
 $password = "你的数据库用户名";
 
-// Create connection
+// 连接数据库
 $conn = new mysqli($servername, $username, $password, $dbname);
-// Check connection
+// 检查连接
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("连接失败：" . $conn->connect_error);
 } 
 
+// 查询数据库
 $sql = "SELECT id, value1, value2, value3, reading_time FROM SensorChart order by reading_time desc limit 40";
-
 $result = $conn->query($sql);
 
+// 保存查询结果
 while ($data = $result->fetch_assoc()){
     $sensor_data[] = $data;
 }
 
+// 获取读取时间数据
 $readings_time = array_column($sensor_data, 'reading_time');
 
-// ******* Uncomment to convert readings time array to your timezone ********
-/*$i = 0;
+// 转换读取时间数据的时区，如果需要的话，取消下面的注释
+/*
+$i = 0;
 foreach ($readings_time as $reading){
-    // Uncomment to set timezone to - 1 hour (you can change 1 to any number)
+    // 取消注释将时区设置为-1小时（您可以将1更改为任何数字）
     $readings_time[$i] = date("Y-m-d H:i:s", strtotime("$reading - 1 hours"));
-    // Uncomment to set timezone to + 4 hours (you can change 4 to any number)
+    // 取消注释将时区设置为+4小时（您可以将4更改为任何数字）
     //$readings_time[$i] = date("Y-m-d H:i:s", strtotime("$reading + 4 hours"));
     $i += 1;
-}*/
+}
+*/
 
+// 获取三个值的数据并反转数组
 $value1 = json_encode(array_reverse(array_column($sensor_data, 'value1')), JSON_NUMERIC_CHECK);
 $value2 = json_encode(array_reverse(array_column($sensor_data, 'value2')), JSON_NUMERIC_CHECK);
 $value3 = json_encode(array_reverse(array_column($sensor_data, 'value3')), JSON_NUMERIC_CHECK);
+
+// 获取反转后的读取时间数据
 $reading_time = json_encode(array_reverse($readings_time), JSON_NUMERIC_CHECK);
 
-/*echo $value1;
-echo $value2;
-echo $value3;
-echo $reading_time;*/
-
+// 释放查询结果内存并关闭连接
 $result->free();
 $conn->close();
 ?>
 
+
 <!DOCTYPE html>
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="30"> <!--自动每30刷新秒刷新一次-->
   <script src="https://code.highcharts.com/highcharts.js"></script>
+  <!--HTTP-->
+  <!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
+
   <style>
     body {
       min-width: 310px;
