@@ -21,7 +21,7 @@ const char *password = "你的WiFi密码";
 const char *serverName = "https://你的域名/esp-chart-post-data.php";
 
 // 填入你的主机地址（HTTP）
-//const char *serverName = "http://你的域名/esp-chart-post-data.php";
+// const char *serverName = "http://你的域名/esp-chart-post-data.php";
 
 // 这里的api key 必须要与 esp-chart-post-data.php 文件内的APIKEY相同
 String apiKeyValue = "Laq8mL6GHjdZLdHA";
@@ -59,16 +59,15 @@ void loop()
   if (WiFi.status() == WL_CONNECTED)
   {
     // HTTPS则如下开启
-    WiFiClientSecure client;
-    client.setInsecure();
-    //如果是HTTP，则注释以上两句
+    WiFiClientSecure client; // 如果是HTTP，则注释
+    client.setInsecure();    // 如果是HTTP，则注释
     HTTPClient http;
 
     // https
-    http.begin(client,serverName);
+    http.begin(client, serverName);
 
     // http
-    //http.begin(serverName);
+    // http.begin(serverName);
 
     // 指定内容类型标题
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
