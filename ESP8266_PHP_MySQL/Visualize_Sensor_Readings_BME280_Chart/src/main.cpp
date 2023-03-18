@@ -24,7 +24,7 @@ const char *serverName = "https://你的域名/esp-chart-post-data.php";
 // const char *serverName = "http://你的域名/esp-chart-post-data.php";
 
 // 这里的api key 必须要与 esp-chart-post-data.php 文件内的APIKEY相同
-String apiKeyValue = "Laq8mL6GHjdZLdHA";
+String apiKeyValue = "你的数据库API_KEY";
 
 Adafruit_BME280 bme; // I2C
 
