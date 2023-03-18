@@ -2,7 +2,7 @@
 
 # 功能说明：
 
-* 配置数据库：`esp-database.php`
+* 配置数据库：`esp-database.php` **注意表名称的大小写**
 * 配置`APIKEY`：`esp-post-data.php`
 * 配置网页风格：`esp-style.css`
 * 网页主体：`esp-weather-station.php`
