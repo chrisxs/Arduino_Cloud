@@ -141,32 +141,6 @@ void setup()
     delay(5000);
     Serial.println("Done Reboot In 5 seconds");
     draw_countdown();
-/*  display.setFont(ArialMT_Plain_16);
-    display.clear();
-    display.drawString(5, 25, "Reboot in 5 Sec !");
-    display.display();
-    delay(1000);
-
-    display.clear();
-    display.drawString(5, 25, "Reboot in 4 Sec !");
-    display.display();
-    delay(1000);
-
-    display.clear();
-    display.drawString(5, 25, "Reboot in 3 Sec !");
-    display.display();
-    delay(1000);
-
-    display.clear();
-    display.drawString(5, 25, "Reboot in 2 Sec !");
-    display.display();
-    delay(1000);
-
-    display.clear();
-    display.drawString(5, 25, "Reboot in 1 Sec !");
-    display.display();
-    delay(1000);*/
-
     ESP.restart();
   }
 
@@ -237,7 +211,7 @@ void setup()
   Serial.println(WiFi.localIP());
 
   // Port defaults to 8266
-  //ArduinoOTA.setPort(8266);
+  // ArduinoOTA.setPort(8266);
 
   ArduinoOTA.setHostname("Get_Linux_Server_Info");
   ArduinoOTA.onStart([]()
@@ -279,18 +253,8 @@ void setup()
     delay(1000);                        // 延迟 1 秒
     Serial.println("正在连接 WiFi..."); // 输出连接信息
   }
-  Serial.println("WiFi 已经连接");           // 输出连接成功信息
+  Serial.println("WiFi 已经连接"); // 输出连接成功信息
   draw_info();
-  /*display.clear();                           // 清空屏幕
-  display.setTextAlignment(TEXT_ALIGN_LEFT); // 文字居左对齐
-  display.drawXbm(35, 0, 60, 36, wifi_logo); // 在屏幕上绘制WiFi图标
-  display.display();                         // 显示WiFi图标
-  delay(3000);
-  display.setFont(ArialMT_Plain_24);     // 设置字体大小
-  display.clear();                       // 清空屏幕
-  display.drawString(33, 5, "Server");   // 在屏幕上显示 "Server" 字符串
-  display.drawString(28, 25, "Monitor"); // 在屏幕上显示 "Monitor" 字符串
-  display.display();                     // 更新显示内容*/
 }
 
 void loop()
