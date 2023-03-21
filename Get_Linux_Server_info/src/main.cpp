@@ -9,7 +9,7 @@
 #include <WiFiManager.h>
 #include <DNSServer.h>
 #include <ArduinoOTA.h>
-#include <ArduinoJson.h> //https://github.com/bblanchon/ArduinoJson
+#include <ArduinoJson.h> 
 #include "setting.h"
 
 #include <string>
@@ -19,15 +19,6 @@ void draw_countdown();
 void draw_info();
 void draw_note();
 void draw_done();
-
-/*const char *ssid = "你的WiFi_SSID";     // WiFi 名称
-const char *password = "你的WiFi密码"; // WiFi 密码
-
-const char *serverUrl_1 = "https://你的域名/sysinfo.php"; // 服务器地址，有 SSL 证书则使用 HTTPS 协议
-const char *token_1 = "你的token";                        // 用于验证服务器的 token
-
-const char *serverUrl_2 = "https://你的域名/sysinfo.php"; // 另一个服务器地址，有 SSL 证书则使用 HTTPS 协议
-const char *token_2 = "你的token";                        // 用于验证服务器的 token*/
 
 void saveConfigCallback()
 {
