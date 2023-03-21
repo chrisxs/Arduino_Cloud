@@ -1,6 +1,6 @@
 <?php
 // 定义 API Token
-$token = "ZsA*M772Uxzv";
+$token = "你的Token";
 
 // 检查 token 是否存在
 if (!isset($_GET['token'])) {
