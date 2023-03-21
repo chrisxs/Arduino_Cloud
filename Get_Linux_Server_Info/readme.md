@@ -24,30 +24,32 @@
 
     - 如果仍然开不了机，并且串口查看信息是不断重复开机码的，可以试试以下代码，清理eeprom。（之前用过WiFiManager没清理干净WiFi记录的可能会有这情况）
 
-    ```
-    /*
-   EEPROM Clear
+```
+/*
+EEPROM Clear
 
-   Sets all of the bytes of the EEPROM to 0.
-   This example code is in the public domain.
+Sets all of the bytes of the EEPROM to 0.
+This example code is in the public domain.
 
-    */
+*/
 
-    #include <EEPROM.h>
+#include <EEPROM.h>
 
-    void setup() {
-    EEPROM.begin(512);
-    // write a 0 to all 512 bytes of the EEPROM
-    for (int i = 0; i < 512; i++) { EEPROM.write(i, 0); }
+void setup() {
+EEPROM.begin(512);
+// write a 0 to all 512 bytes of the EEPROM
+for (int i = 0; i < 512; i++) { EEPROM.write(i, 0); }
 
-    // turn the LED on when we're done
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
-    EEPROM.end();
-    }
+// turn the LED on when we're done
+pinMode(13, OUTPUT);
+digitalWrite(13, HIGH);
+EEPROM.end();
+}
 
-    void loop() {}
-    ```
+void loop() {}
+```
+
+
 5. 完成以上操作后，开机，打开手机可以看见一个名为`Get_Linux_Server_Info`的热点，点击`config wifi`进入后按着项目填写，然后按`save`即可。
 
 6. 配置好后，会出现提示，等待重启即可。
