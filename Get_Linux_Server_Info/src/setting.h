@@ -100,7 +100,7 @@ void draw_done(){
     display.clear();
     display.drawXbm(35, 0, 60, 36, wifi_logo); // 在屏幕上绘制WiFi图标
     display.setFont(ArialMT_Plain_16);
-    display.drawString(33, 35, "Dnoe");
+    display.drawString(35, 35, "Dnoe");
     display.setFont(ArialMT_Plain_10);
     display.drawString(17, 50, "reboot for connet WiFi");
     display.display();

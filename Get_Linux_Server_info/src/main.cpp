@@ -141,7 +141,7 @@ void setup()
     delay(5000);
     Serial.println("Done Reboot In 5 seconds");
     draw_countdown();
-/*    display.setFont(ArialMT_Plain_16);
+/*  display.setFont(ArialMT_Plain_16);
     display.clear();
     display.drawString(5, 25, "Reboot in 5 Sec !");
     display.display();
