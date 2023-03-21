@@ -1,29 +1,24 @@
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>       // 引用ESP8266WiFi库，用于连接WiFi
+#include <ESP8266HTTPClient.h> // 引用ESP8266HTTPClient库，用于向服务器发送HTTP请求
 
-#include <ESP8266mDNS.h>
-#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>      // 引用ESP8266mDNS库，用于将设备注册到局域网内的mDNS服务器
+#include <ESP8266WebServer.h> // 引用ESP8266WebServer库，用于创建Web服务器
 
-#include <WiFiUdp.h>
-#include <WiFiManager.h>
-#include <DNSServer.h>
-#include <ArduinoOTA.h>
-#include <ArduinoJson.h> 
-#include "setting.h"
+#include <WiFiUdp.h>     // 引用WiFiUdp库，用于发送UDP数据包
+#include <WiFiManager.h> // 引用WiFiManager库，用于简化WiFi连接和管理
+#include <DNSServer.h>   // 引用DNSServer库，用于将特定的DNS请求重定向到设备
+#include <ArduinoOTA.h>  // 引用ArduinoOTA库，用于通过WiFi进行OTA固件更新
+#include <ArduinoJson.h> // 引用ArduinoJson库，用于解析JSON数据
+#include "setting.h"     // 引用自定义的setting.h头文件，用于保存设备配置
 
-#include <string>
-#include <stdlib.h>
+#include <string>   // 引用string库，用于处理字符串
+#include <stdlib.h> // 引用stdlib.h库，用于实现C++标准库函数
 
-void draw_countdown();
-void draw_info();
-void draw_note();
-void draw_done();
-
-void saveConfigCallback()
+void saveConfigCallback() // 定义函数，用于保存设备配置
 {
-  Serial.println("Should save config");
-  shouldSaveConfig = true;
+  Serial.println("Should save config"); // 打印提示信息，表明需要保存配置
+  shouldSaveConfig = true;              // 设置标志位shouldSaveConfig为true，以便在循环中保存配置
 }
 
 void setup()
@@ -31,75 +26,75 @@ void setup()
   Serial.begin(115200); // 初始化串口通信，波特率为 115200
   pinMode(SetPin, OUTPUT);
   int SetPinState = digitalRead(SetPin);
+
   display.init();                 // 初始化显示器
   display.setI2cAutoInit(true);   // 开启I2C自动初始化
   display.flipScreenVertically(); // 翻转屏幕以正确显示
   display.clear();                // 清除屏幕上的内容
 
   // 读取FS json的配置
-  Serial.println("mounting FS...");
-  if (SPIFFS.begin())
+  Serial.println("mounting FS..."); // 打印串口信息：挂载文件系统
+  if (SPIFFS.begin())               // 如果SPIFFS文件系统成功挂载
   {
-    Serial.println("mounted file system");
-    if (SPIFFS.exists("/config.json"))
+    Serial.println("mounted file system"); // 打印串口信息：文件系统已挂载
+    if (SPIFFS.exists("/config.json"))     // 如果config.json文件存在于SPIFFS中
     {
-      // file exists, reading and loading
-      Serial.println("reading config file");
-      File configFile = SPIFFS.open("/config.json", "r");
-      if (configFile)
+      // 文件存在，正在读取并加载配置信息
+      Serial.println("reading config file");              // 打印串口信息：正在读取配置文件
+      File configFile = SPIFFS.open("/config.json", "r"); // 打开配置文件
+      if (configFile)                                     // 如果配置文件打开成功
       {
-        Serial.println("opened config file");
-        size_t size = configFile.size();
-        // Allocate a buffer to store contents of the file.
+        Serial.println("opened config file"); // 打印串口信息：配置文件已打开
+        size_t size = configFile.size();      // 获取配置文件大小
+        // 分配一个缓冲区来存储文件内容。
         std::unique_ptr<char[]> buf(new char[size]);
 
-        configFile.readBytes(buf.get(), size);
+        configFile.readBytes(buf.get(), size); // 读取配置文件内容
 
 #ifdef ARDUINOJSON_VERSION_MAJOR >= 6
-        DynamicJsonDocument json(1024);
-        auto deserializeError = deserializeJson(json, buf.get());
-        serializeJson(json, Serial);
-        if (!deserializeError)
+        DynamicJsonDocument json(1024);                           // 创建一个json文档
+        auto deserializeError = deserializeJson(json, buf.get()); // 反序列化JSON
+        serializeJson(json, Serial);                              // 将JSON序列化并打印到串口
+        if (!deserializeError)                                    // 如果反序列化成功
         {
 #else
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject &json = jsonBuffer.parseObject(buf.get());
-        json.printTo(Serial);
-        if (json.success())
+        DynamicJsonBuffer jsonBuffer;                         // 创建一个json缓冲区
+        JsonObject &json = jsonBuffer.parseObject(buf.get()); // 将配置文件解析成json对象
+        json.printTo(Serial);                                 // 打印JSON到串口
+        if (json.success())                                   // 如果解析成功
         {
 #endif
-          Serial.println("\nparsed json");
-          serverUrl_1 = json["serverUrl_1"].as<const char *>();
-          serverUrl_2 = json["serverUrl_2"].as<const char *>();
-          token = json["token"].as<const char *>();
+          Serial.println("\nparsed json");                      // 打印串口信息：JSON解析成功
+          serverUrl_1 = json["serverUrl_1"].as<const char *>(); // 从JSON中读取serverUrl_1
+          serverUrl_2 = json["serverUrl_2"].as<const char *>(); // 从JSON中读取serverUrl_2
+          token = json["token"].as<const char *>();             // 从JSON中读取token
         }
-        else
+        else // 如果解析失败
         {
-          Serial.println("failed to load json config");
+          Serial.println("failed to load json config"); // 打印串口信息：JSON配置加载失败
         }
-        configFile.close();
+        configFile.close(); // 关闭配置文件
       }
     }
   }
-  else
+  else // 如果SPIFFS文件系统挂载失败
   {
-    Serial.println("failed to mount FS");
+    Serial.println("failed to mount FS"); // 打印串口信息：文件系统挂载失败
   }
-  // end read
+  // 结束读取配置文件
 
-  WiFiManagerParameter custom_serverUrl_1("serverUrl_1", "serverUrl_1", serverUrl_1.c_str(), 40);
-  WiFiManagerParameter custom_serverUrl_2("serverUrl_2", "serverUrl_2", serverUrl_2.c_str(), 40);
-  WiFiManagerParameter custom_token("token", "token", token.c_str(), 32);
-  WiFiManagerParameter custom_text("<p>点击SSID名称选择连接WiFi,并输入密码/服务器地址/设备token</p>");
+  WiFiManagerParameter custom_serverUrl_1("serverUrl_1", "serverUrl_1", serverUrl_1.c_str(), 40);      // 自定义参数1，用于设置服务器地址1，最大长度为40
+  WiFiManagerParameter custom_serverUrl_2("serverUrl_2", "serverUrl_2", serverUrl_2.c_str(), 40);      // 自定义参数2，用于设置服务器地址2，最大长度为40
+  WiFiManagerParameter custom_token("token", "token", token.c_str(), 32);                              // 自定义参数3，用于设置设备 token，最大长度为32
+  WiFiManagerParameter custom_text("<p>点击SSID名称选择连接WiFi,并输入密码/服务器地址/设备token</p>"); // 自定义参数4，显示在 WiFiManager 界面上的文本提示
 
-  // WiFiManager
-  // Local intialization. Once its business is done, there is no need to keep it around
+  // WiFiManager 实例化
   WiFiManager wifiManager;
 
-  // set config save notify callback
+  // 设置配置保存回调函数
   wifiManager.setSaveConfigCallback(saveConfigCallback);
 
-  // add all your parameters here
+  // 添加自定义参数
   wifiManager.addParameter(&custom_serverUrl_1);
   wifiManager.addParameter(&custom_serverUrl_2);
   wifiManager.addParameter(&custom_token);
@@ -116,7 +111,7 @@ void setup()
   // SPIFFS.format();
 
   // 设置重置按钮的功能
-  if (SetPinState == HIGH)
+  if (SetPinState == HIGH) // 如果重置按钮被按下
   {
     Serial.println("Getting Reset ESP Wifi-Setting.......");
     display.setFont(ArialMT_Plain_10);
@@ -125,14 +120,14 @@ void setup()
     display.drawString(0, 40, "RESET mode activated .");
     display.drawString(0, 50, "Please wait for reboot !");
     display.display();
-    wifiManager.resetSettings();
-    delay(5000);
+    wifiManager.resetSettings();//重置ESP的Wifi设置
+        delay(5000);
     Serial.println("Formatting FS......");
-    SPIFFS.format();
+    SPIFFS.format(); // 格式化SPIFFS文件系统
     delay(5000);
     Serial.println("Done Reboot In 5 seconds");
-    draw_countdown();
-    ESP.restart();
+    draw_countdown(); // 显示倒计时
+    ESP.restart();    // 重启ESP
   }
 
   // 设置最低信号质量,如果信号质量低于8%,则略这些AP
@@ -145,7 +140,7 @@ void setup()
 
   // 获取ssid并传递并尝试连接
   // 如果它没有连接，它将启动具有指定名称的访问点,"AutoConnectAP",并进入等待配置的阻塞循环
-  draw_note();
+draw_note();
   if (!wifiManager.autoConnect("Get_Linux_Server_Info", ""))
   {
     Serial.println("failed to connect and hit timeout");
@@ -155,97 +150,110 @@ void setup()
     delay(1000);
   }
 
-  // 如果已经连接
-  Serial.println("WiFi connected)");
-  draw_done();
-  delay(3000);
+// 如果已经连接
+Serial.println("WiFi connected)"); // 打印WiFi已连接
+draw_done(); // 调用函数画图完成
+delay(3000); // 延迟3秒
 
-  serverUrl_1 = custom_serverUrl_1.getValue();
-  serverUrl_2 = custom_serverUrl_2.getValue();
-  token = custom_token.getValue();
-  Serial.println("The values in the file are: ");
-  Serial.println("\tserverUrl_1: " + String(custom_serverUrl_1.getValue()));
-  Serial.println("\tserverUrl_2: " + String(custom_serverUrl_2.getValue()));
-  Serial.println("\ttoken: " + String(custom_token.getValue()));
+// 获取自定义服务器地址和token
+serverUrl_1 = custom_serverUrl_1.getValue(); // 获取自定义服务器地址1
+serverUrl_2 = custom_serverUrl_2.getValue(); // 获取自定义服务器地址2
+token = custom_token.getValue(); // 获取自定义token
+Serial.println("The values in the file are: "); // 打印文件中的值
+Serial.println("\tserverUrl_1: " + String(custom_serverUrl_1.getValue())); // 打印自定义服务器地址1的值
+Serial.println("\tserverUrl_2: " + String(custom_serverUrl_2.getValue())); // 打印自定义服务器地址2的值
+Serial.println("\ttoken: " + String(custom_token.getValue())); // 打印自定义token的值
 
-  if (shouldSaveConfig)
+// 如果需要保存配置
+if (shouldSaveConfig)
+{
+  Serial.println("saving config"); // 打印正在保存配置
+#ifdef ARDUINOJSON_VERSION_MAJOR >= 6
+  DynamicJsonDocument json(1024); // 创建动态JSON文档对象
+#else
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject &json = jsonBuffer.createObject(); // 创建JSON对象
+#endif
+  json["serverUrl_1"] = serverUrl_1.c_str(); // 添加自定义服务器地址1到JSON对象
+  json["serverUrl_2"] = serverUrl_2.c_str(); // 添加自定义服务器地址2到JSON对象
+  json["token"] = token.c_str(); // 添加自定义token到JSON对象
+
+  File configFile = SPIFFS.open("/config.json", "w"); // 打开配置文件以写入
+  if (!configFile)
   {
-    Serial.println("saving config");
-#ifdef ARDUINOJSON_VERSION_MAJOR >= 6
-    DynamicJsonDocument json(1024);
-#else
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject &json = jsonBuffer.createObject();
-#endif
-    json["serverUrl_1"] = serverUrl_1.c_str();
-    json["serverUrl_2"] = serverUrl_2.c_str();
-    json["token"] = token.c_str();
-
-    File configFile = SPIFFS.open("/config.json", "w");
-    if (!configFile)
-    {
-      Serial.println("failed to open config file for writing");
-    }
-
-#ifdef ARDUINOJSON_VERSION_MAJOR >= 6
-    serializeJson(json, Serial);
-    serializeJson(json, configFile);
-#else
-    json.printTo(Serial);
-    json.printTo(configFile);
-#endif
-    configFile.close();
-    // end save
+    Serial.println("failed to open config file for writing"); // 打开配置文件失败
   }
 
-  Serial.println("local ip");
-  Serial.println(WiFi.localIP());
+#ifdef ARDUINOJSON_VERSION_MAJOR >= 6
+  serializeJson(json, Serial); // 将JSON对象序列化并打印到串口
+  serializeJson(json, configFile); // 将JSON对象序列化并写入配置文件
+#else
+  json.printTo(Serial); // 将JSON对象打印到串口
+  json.printTo(configFile); // 将JSON对象写入配置文件
+#endif
+  configFile.close(); // 关闭配置文件
+  // end save
+}
+
+Serial.println("local ip： "+ String(WiFi.localIP().toString())); // 打印本地IP地址
 
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
 
-  ArduinoOTA.setHostname("Get_Linux_Server_Info");
-  ArduinoOTA.onStart([]()
-                     {
-      String type;
-      if (ArduinoOTA.getCommand() == U_FLASH) {
-        type = "sketch";
-      } else { // U_SPIFFS
-        type = "filesystem";
-      }
-      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-      Serial.println("Start updating " + type); });
-  ArduinoOTA.onEnd([]()
-                   { Serial.println("\nEnd"); });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
-                        { Serial.printf("Progress: %u%%\r", (progress / (total / 100))); });
-  ArduinoOTA.onError([](ota_error_t error)
-                     {
-      Serial.printf("Error[%u]: ", error);
-      if (error == OTA_AUTH_ERROR) {
-        Serial.println("Auth Failed");
-      } else if (error == OTA_BEGIN_ERROR) {
-        Serial.println("Begin Failed");
-      } else if (error == OTA_CONNECT_ERROR) {
-        Serial.println("Connect Failed");
-      } else if (error == OTA_RECEIVE_ERROR) {
-        Serial.println("Receive Failed");
-      } else if (error == OTA_END_ERROR) {
-        Serial.println("End Failed");
-      } });
-  ArduinoOTA.begin();
-
-  display.init();                       // 初始化 OLED 显示屏
-  display.clear();                      // 清空屏幕
-  display.setFont(ArialMT_Plain_10);    // 设置字体
-  display.flipScreenVertically();       // 垂直翻转屏幕
-  while (WiFi.status() != WL_CONNECTED) // 等待连接成功
-  {
-    delay(1000);                        // 延迟 1 秒
-    Serial.println("正在连接 WiFi..."); // 输出连接信息
+ArduinoOTA.setHostname("Get_Linux_Server_Info"); // 设置 OTA 主机名
+ArduinoOTA.onStart([]() // OTA 开始时执行的函数
+{
+  String type;
+  if (ArduinoOTA.getCommand() == U_FLASH) { // 判断是固件更新还是文件系统更新
+    type = "sketch";
+  } else {
+    type = "filesystem";
   }
-  Serial.println("WiFi 已经连接"); // 输出连接成功信息
-  draw_info();
+  // 注意：如果更新文件系统，此处应卸载文件系统
+  Serial.println("开始更新 " + type); // 打印更新信息
+});
+
+ArduinoOTA.onEnd([]() // OTA 结束时执行的函数
+{
+  Serial.println("\n更新结束"); // 打印更新结束信息
+});
+
+ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) // OTA 更新进度发生改变时执行的函数
+{
+  Serial.printf("更新进度: %u%%\r", (progress / (total / 100))); // 打印更新进度信息
+});
+
+ArduinoOTA.onError([](ota_error_t error) // OTA 更新出错时执行的函数
+{
+  Serial.printf("错误[%u]: ", error); // 打印错误信息
+  if (error == OTA_AUTH_ERROR) {
+    Serial.println("身份验证失败");
+  } else if (error == OTA_BEGIN_ERROR) {
+    Serial.println("开始更新失败");
+  } else if (error == OTA_CONNECT_ERROR) {
+    Serial.println("连接失败");
+  } else if (error == OTA_RECEIVE_ERROR) {
+    Serial.println("接收数据失败");
+  } else if (error == OTA_END_ERROR) {
+    Serial.println("结束更新失败");
+  }
+});
+
+ArduinoOTA.begin(); // 开始 OTA 更新
+
+display.init(); // 初始化 OLED 显示屏
+display.clear(); // 清空屏幕
+display.setFont(ArialMT_Plain_10); // 设置字体
+display.flipScreenVertically(); // 垂直翻转屏幕
+
+while (WiFi.status() != WL_CONNECTED) // 等待连接成功
+{
+  delay(1000); // 延迟 1 秒
+  Serial.println("正在连接 WiFi..."); // 输出连接信息
+}
+
+Serial.println("WiFi 已经连接"); // 输出连接成功信息
+draw_info(); // 调用自定义函数，绘制屏幕信息
 }
 
 void loop()

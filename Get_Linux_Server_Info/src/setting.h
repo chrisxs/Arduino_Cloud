@@ -2,17 +2,20 @@
 #include "SSD1306Wire.h" // 引入OLED驱动库
 
 
-// 用于WiFiManager界面中的变量服务器域名、端口、口令
-std::string serverUrl_1;
-std::string serverUrl_2;
-std::string token;
+std::string serverUrl_1; // 服务器地址1
+std::string serverUrl_2; // 服务器地址2
+std::string token; // 令牌
 
-const int SetPin = D3;
-bool shouldSaveConfig = false;
-
+const int SetPin = D3; // 设置引脚号，常量值为D3
+bool shouldSaveConfig = false; // 是否应该保存配置
 
 // 初始化OLED对象
 SSD1306Wire display(0x3c, D2, D1);
+
+void draw_countdown(); // 定义函数，用于绘制倒计时界面
+void draw_info();      // 定义函数，用于绘制信息界面
+void draw_note();      // 定义函数，用于绘制提示信息界面
+void draw_done();      // 定义函数，用于绘制完成界面
 
 // 定义Wi-Fi图标的数组
 const uint8_t wifi_logo[] PROGMEM = {
@@ -57,11 +60,11 @@ void draw_info(){
 }
 
 void draw_countdown(){
-    display.setFont(ArialMT_Plain_16);
-    display.clear();
-    display.drawString(5, 25, "Reboot in 5 Sec !");
-    display.display();
-    delay(1000);
+    display.setFont(ArialMT_Plain_16); // 设置显示字体
+    display.clear(); // 清空显示器上的内容
+    display.drawString(5, 25, "Reboot in 5 Sec !"); // 在显示器上显示倒计时信息
+    display.display(); // 将内容显示到显示器上
+    delay(1000); // 程序暂停1秒钟
 
     display.clear();
     display.drawString(5, 25, "Reboot in 4 Sec !");
@@ -84,24 +87,25 @@ void draw_countdown(){
     delay(1000);
 }
 
+
 void draw_note(){    
-    display.clear();
+    display.clear(); // 清空屏幕
     display.drawXbm(35, 0, 60, 36, wifi_logo); // 在屏幕上绘制WiFi图标
-    display.setFont(ArialMT_Plain_16);
-    display.drawString(33, 35, "AP Mode");
-    display.setFont(ArialMT_Plain_10);
-    display.drawString(17, 50, "waiting for config WiFi");
-    display.display();
-    delay(1000);
+    display.setFont(ArialMT_Plain_16); // 设置字体大小
+    display.drawString(33, 35, "AP Mode"); // 在屏幕上绘制"AP Mode"文字
+    display.setFont(ArialMT_Plain_10); // 设置字体大小
+    display.drawString(17, 50, "waiting for config WiFi"); // 在屏幕上绘制"waiting for config WiFi"文字
+    display.display(); // 刷新屏幕
+    delay(1000); // 延迟1秒
 }
 
 void draw_done(){    
-    display.clear();
+    display.clear(); // 清空屏幕
     display.drawXbm(35, 0, 60, 36, wifi_logo); // 在屏幕上绘制WiFi图标
-    display.setFont(ArialMT_Plain_16);
-    display.drawString(35, 35, "Dnoe");
-    display.setFont(ArialMT_Plain_10);
-    display.drawString(17, 50, "reboot for connet WiFi");
-    display.display();
-    delay(1000);
+    display.setFont(ArialMT_Plain_16); // 设置字体大小
+    display.drawString(35, 35, "Dnoe"); // 在屏幕上绘制"Dnoe"文字
+    display.setFont(ArialMT_Plain_10); // 设置字体大小
+    display.drawString(17, 50, "reboot for connet WiFi"); // 在屏幕上绘制"reboot for connet WiFi"文字
+    display.display(); // 刷新屏幕
+    delay(1000); // 延迟1秒
 }
