@@ -16,9 +16,9 @@ const char *ssid = "你的WiFi_SSID";
 const char *password = "你的WiFi_密码";
 
 // 服务器URL
-const char *serverName = "https://chrisxs.com/espdb/esp-post-data.php";
+const char *serverName = "https://你的服务器URL/esp-post-data.php";
 // https服务器URL
-// const char *serverName = "https://chrisxs.com/espdb/esp-post-data.php";
+// const char *serverName = "https://你的服务器URL/esp-post-data.php";
 
 // apiKeyValue为随机生成，必须与esp-database.php内的API KEY保持一致
 String apiKeyValue = "你的数据库API_KEY";
@@ -100,7 +100,7 @@ void loop()
 
       // 你可以注释上面的 httpRequestData 变量
       // 然后使用下面的 httpRequestData 变量（用于没有 BME280 传感器的测试目的）
-      // String httpRequestData = "api_key=tPmAT5Ab3j7F9&sensor=BME280&location=Office&value1=24.75&value2=49.54&value3=1005.14";
+      // String httpRequestData = "api_key=你的数据库API_KEY&sensor=BME280&location=Office&value1=24.75&value2=49.54&value3=1005.14";
 
       // 发送 HTTP POST 请求
       int httpResponseCode = http.POST(httpRequestData);

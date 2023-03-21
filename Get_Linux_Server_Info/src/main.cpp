@@ -140,11 +140,11 @@ void setup()
 
   // 获取ssid并传递并尝试连接
   // 如果它没有连接，它将启动具有指定名称的访问点,"AutoConnectAP",并进入等待配置的阻塞循环
-  draw_note();
+ draw_note();
   if (!wifiManager.autoConnect("Get_Linux_Server_Info", ""))
-
+ 
   {
-
+    
     Serial.println("failed to connect and hit timeout");
     delay(3000);
     // 重置并重试，或者让它深入睡眠

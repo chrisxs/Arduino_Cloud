@@ -1,5 +1,5 @@
 <?php
-$servername = '你的数据库API_KEY';
+$servername = '你的数据库host名称';
 
 $dbname = '你的数据库名称';
 $username = '你的数据库用户名';
