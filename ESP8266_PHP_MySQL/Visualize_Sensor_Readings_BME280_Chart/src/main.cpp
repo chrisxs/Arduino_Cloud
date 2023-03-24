@@ -13,6 +13,9 @@
 #include <Adafruit_BME280.h>
 #include <WiFiClientSecure.h> //HTTPS
 
+#include "OTA_setting.h"
+#include "webserial_setting.h"
+
 // 替换掉下面的WiFi,填入你的
 const char *ssid = "你的WiFi_SSID";
 const char *password = "你的WiFi密码";
@@ -24,13 +27,17 @@ const char *serverName = "https://你的域名/esp-chart-post-data.php";
 // const char *serverName = "http://你的域名/esp-chart-post-data.php";
 
 // 这里的api key 必须要与 esp-chart-post-data.php 文件内的APIKEY相同
-String apiKeyValue = "你的数据库API_KEY";
+String apiKeyValue = "你的数据库API-KEY";
 
 Adafruit_BME280 bme; // I2C
 
 void setup()
 {
   Serial.begin(115200);
+  WebSerial.begin(&serialserver);
+  WebSerial.msgCallback(recvMsg); // 附加反馈信息
+  serialserver.begin();           // serialserver启动
+  OTA();
 
   WiFi.begin(ssid, password);
   Serial.println("Connecting");
@@ -76,6 +83,8 @@ void loop()
     String httpRequestData = "api_key=" + apiKeyValue + "&value1=" + String(bme.readTemperature()) + "&value2=" + String(bme.readHumidity()) + "&value3=" + String(bme.readPressure() / 100.0F) + "";
     Serial.print("httpRequestData: ");
     Serial.println(httpRequestData);
+    WebSerial.println(httpRequestData);
+    WebSerial.println("WiFi_SSID: " + String(WiFi.SSID() + "    IP地址:" + String(WiFi.localIP().toString()))); // web串口打印WiFi_SSID和IP地址
 
     // 在上面注释httpRequestData变量然后，使用下面的httpRequestData变量
     // （出于测试目的，绕过BME280传感器）
@@ -90,16 +99,19 @@ void loop()
     // 如果需要以下内容类型的HTTP请求：application / json，请使用以下命令：
     // http.addHeader("Content-Type", "application/json");
     // int httpResponseCode = http.POST("{\"value1\":\"19\",\"value2\":\"67\",\"value3\":\"78\"}");
-
     if (httpResponseCode > 0)
     {
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
+      WebSerial.print("HTTP Response code: ");
+      WebSerial.println(httpResponseCode);
     }
     else
     {
       Serial.print("Error code: ");
       Serial.println(httpResponseCode);
+      WebSerial.print("Error code: ");
+      WebSerial.println(httpResponseCode);
     }
     // Free resources
     http.end();
