@@ -12,8 +12,12 @@
 #include <Adafruit_BME280.h>
 #include <WiFiClientSecure.h>
 
+#include "OTA_setting.h"
+#include "webserial_setting.h"
+#include "WiFi_setting.h"
+
 const char *ssid = "你的WiFi_SSID";
-const char *password = "你的WiFi_密码";
+const char *password = "你的WiFi密码";
 
 // 服务器URL
 const char *serverName = "https://你的服务器URL/esp-post-data.php";
@@ -21,7 +25,7 @@ const char *serverName = "https://你的服务器URL/esp-post-data.php";
 // const char *serverName = "https://你的服务器URL/esp-post-data.php";
 
 // apiKeyValue为随机生成，必须与esp-database.php内的API KEY保持一致
-String apiKeyValue = "你的数据库API_KEY";
+String apiKeyValue = "你的API-KEY";
 String sensorName = "BME280";
 String sensorLocation = "office";
 
@@ -35,7 +39,7 @@ String sensorLocation = "office";
 
 Adafruit_BME280 bme; // I2C
 // Adafruit_BME280 bme(BME_CS);  // 硬件 SPI
-// Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK);  // 软件 SPI
+// Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK);  // 软 SPI
 
 // 下面的变量是无符号长整型，因为时间（以毫秒为单位）会很快成为比 int 类型能够存储的更大的数字。
 unsigned long lastTime = 0;
@@ -47,7 +51,13 @@ unsigned long timerDelay = 5000;
 void setup()
 {
   Serial.begin(115200); // 初始化串口通信，波特率为115200
+  // WebSerial启动,浏览器输入路径"IP地址:340/webserial"
+  WebSerial.begin(&serialserver);
 
+  WebSerial.msgCallback(recvMsg); // 附加反馈信息
+  serialserver.begin();           // serialserver启动
+  wifi_setting();
+  OTA();
   WiFi.begin(ssid, password);           // 连接WiFi网络，需要提供SSID和密码
   Serial.println("Connecting");         // 在串口打印提示信息：正在连接WiFi
   while (WiFi.status() != WL_CONNECTED) // 循环等待WiFi连接成功
@@ -57,9 +67,9 @@ void setup()
   }
   Serial.println("");                                          // 在串口打印空行，作为分隔符
   Serial.print("Connected to WiFi network with IP Address: "); // 在串口打印提示信息：已连接到WiFi网络，显示IP地址
-  Serial.println(WiFi.localIP()); 
-  Serial.println(WiFi.SSID()); 
-  Serial.println(WiFi.RSSI());                             // 在串口打印本地IP地址
+  Serial.println(WiFi.localIP());
+  Serial.println(WiFi.SSID());
+  Serial.println(WiFi.RSSI()); // 在串口打印本地IP地址
 
   // 初始化BME280传感器，使用I2C接口，I2C地址为0x76
   bool status = bme.begin(); // bme.begin(0x76)
@@ -97,6 +107,9 @@ void loop()
       String httpRequestData = "api_key=" + apiKeyValue + "&sensor=" + sensorName + "&location=" + sensorLocation + "&value1=" + String(bme.readTemperature()) + "&value2=" + String(bme.readHumidity()) + "&value3=" + String(bme.readPressure() / 100.0F) + "";
       Serial.print("httpRequestData: ");
       Serial.println(httpRequestData);
+      WebSerial.print("httpRequestData: ");
+      WebSerial.println(httpRequestData);
+      WebSerial.println("WiFi_SSID: " + String(WiFi.SSID() + "    IP地址:" + String(WiFi.localIP().toString()))); // web串口打印WiFi_SSID和IP地址
 
       // 你可以注释上面的 httpRequestData 变量
       // 然后使用下面的 httpRequestData 变量（用于没有 BME280 传感器的测试目的）
@@ -117,11 +130,15 @@ void loop()
       {
         Serial.print("HTTP 响应代码：");
         Serial.println(httpResponseCode);
+        WebSerial.print("HTTP 响应代码："); // Web串口打印
+        WebSerial.println(httpResponseCode);
       }
       else
       {
         Serial.print("错误代码：");
         Serial.println(httpResponseCode);
+        WebSerial.print("错误代码：");
+        WebSerial.println(httpResponseCode);
       }
       // 释放资源
       http.end();
