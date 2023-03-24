@@ -50,7 +50,7 @@ void setup()
   Serial.print("Connected to WiFi network with IP Address: ");
   Serial.println(WiFi.localIP());
 
-  // 万一无法连接BEM 280串口会提示反馈错误信息,可以直接用bme.begin(0x76)跳过
+  // 万一无法连接BEM 280串口会提示反馈错误信息,可以直接用bme.begin()跳过
   bool status = bme.begin(0x76);
   if (!status)
   {
