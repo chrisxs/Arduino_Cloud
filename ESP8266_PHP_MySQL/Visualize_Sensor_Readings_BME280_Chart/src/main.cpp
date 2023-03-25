@@ -125,5 +125,5 @@ void loop()
     Serial.println("WiFi Disconnected");
   }
   // 每隔30秒发送一次post请求
-  delay(5000);
+  delay(30000);
 }
