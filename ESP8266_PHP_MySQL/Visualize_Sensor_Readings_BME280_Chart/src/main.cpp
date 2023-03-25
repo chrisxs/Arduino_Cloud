@@ -27,7 +27,7 @@ const char *serverName = "https://你的域名/esp-chart-post-data.php";
 // const char *serverName = "http://你的域名/esp-chart-post-data.php";
 
 // 这里的api key 必须要与 esp-chart-post-data.php 文件内的APIKEY相同
-String apiKeyValue = "你的数据库API-KEY";
+String apiKeyValue = "数据库APIKEY";
 
 Adafruit_BME280 bme; // I2C
 
@@ -81,14 +81,18 @@ void loop()
 
     // 准备HTTP POST请求数据
     String httpRequestData = "api_key=" + apiKeyValue + "&value1=" + String(bme.readTemperature()) + "&value2=" + String(bme.readHumidity()) + "&value3=" + String(bme.readPressure() / 100.0F) + "";
-    Serial.print("httpRequestData: ");
+
+    // web串口打印HTTP POST请求数据
     Serial.println(httpRequestData);
     WebSerial.println(httpRequestData);
-    WebSerial.println("WiFi_SSID: " + String(WiFi.SSID() + "    IP地址:" + String(WiFi.localIP().toString()))); // web串口打印WiFi_SSID和IP地址
+
+    // web串口打印WiFi_SSID和IP地址
+    Serial.println("WiFi_SSID: " + String(WiFi.SSID()) + "    IP地址:" + String(WiFi.localIP().toString()));
+    WebSerial.println("WiFi_SSID: " + String(WiFi.SSID()) + "    IP地址:" + String(WiFi.localIP().toString()));
 
     // 在上面注释httpRequestData变量然后，使用下面的httpRequestData变量
     // （出于测试目的，绕过BME280传感器）
-    // String httpRequestData = "api_key=tPmAT5Ab3j7F9&value1=24.75&value2=49.54&value3=1005.14";
+    // String httpRequestData = "api_key=数据库APIKEY&value1=24.75&value2=49.54&value3=1005.14";
     // 发送POST请求
     int httpResponseCode = http.POST(httpRequestData);
 
@@ -121,5 +125,5 @@ void loop()
     Serial.println("WiFi Disconnected");
   }
   // 每隔30秒发送一次post请求
-  delay(30000);
+  delay(5000);
 }
