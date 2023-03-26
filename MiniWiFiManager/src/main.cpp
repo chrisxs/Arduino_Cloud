@@ -2,10 +2,10 @@
 #include <WiFiClient.h>
 #include "wifi_setting.h"
 #include "OTA_setting.h"
-//#include <ElegantOTA.h>
+
 #include <FS.h>
 
-//ESP8266WebServer OTAserver(8266);
+
 
 void setup()
 {
@@ -37,12 +37,6 @@ void setup()
   server.on("/save", handleSave);
   server.on("/restart", HTTP_POST, handleRestart);
   server.on("/clear", HTTP_POST, handleClear);
-  //OTAserver.on("/", []()
-  //             { OTAserver.send(200, "text/plain", "Hi! I am ESP8266."); });
-
-  //ElegantOTA.begin(&OTAserver); // Start ElegantOTA
-  //OTAserver.begin();
-  //Serial.println("HTTP server started");
 }
 
 void loop()
