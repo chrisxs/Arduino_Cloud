@@ -7,7 +7,7 @@ void OTA();
 void OTA()
 {
     OTAserver.on("/", []()
-              { OTAserver.send(200, "text/plain", "Hi! I am ESP8266."); });
+              { OTAserver.send(200, "text/plain", "ESP8266 OTA 界面"); });
 
     ElegantOTA.begin(&OTAserver); 
     OTAserver.begin();
