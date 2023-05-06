@@ -12,8 +12,17 @@ void handleRestart(); // 声明处理重启设备请求的函数
 void handleClear();   // 声明处理清除WiFi凭据请求的函数
 bool loadConfig();    // 声明读取WiFi凭据的函数
 
-void handleRoot() {
-  String html = "<html><head>"
+void handleRoot()
+{
+  const char *http_username = "admin";
+  const char *http_password = "admin";
+
+  if (!server.authenticate(http_username, http_password))
+  {
+    server.requestAuthentication();
+    return;
+  }
+    String html = "<html><head>"
                 "<meta charset=\"UTF-8\">"
                 "<style> body { text-align: center; } </style>"
                 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
