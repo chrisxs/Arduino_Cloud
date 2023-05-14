@@ -56,7 +56,7 @@ void setup()
 
   WebSerial.msgCallback(recvMsg); // 附加反馈信息
   serialserver.begin();           // serialserver启动
-  wifi_setting();
+  //wifi_setting();
   OTA();
   WiFi.begin(ssid, password);           // 连接WiFi网络，需要提供SSID和密码
   Serial.println("Connecting");         // 在串口打印提示信息：正在连接WiFi
