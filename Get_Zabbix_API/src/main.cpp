@@ -4,16 +4,16 @@
 #include "SSD1306Wire.h" // 引入OLED驱动库
 
 // 初始化OLED对象
-SSD1306Wire display(0x3c, 2, 14); 
+SSD1306Wire display(0x3c, 2, 14);
 
 
-const char *ssid = "WiFi_SSID";
-const char *password = "WiFi密码";
+const char *ssid = "你的WiFi_SSID";
+const char *password = "你的WiFi密码";
 
-const char *server = "你的服务器地址或者路径";
+const char *server = "你的zabbix域名地址或者IP地址";
 const int port = 80;
 const char *apiPath = "/zabbix/api_jsonrpc.php";
-const char *apiToken = "你的apiToken";
+const char *apiToken = "你的zabbix_API_TOKEN";
 const char *hostname = "主机名";
 
 void printCPUUsage();
@@ -21,7 +21,6 @@ void printMemoryUsage();
 void printSWAPUsage();
 void printBootTime();
 
-void draw_info();      // 定义函数，用于绘制信息界面
 
 // 定义 API 请求字符串变量
 String apiRequest_bootTime = String() +
